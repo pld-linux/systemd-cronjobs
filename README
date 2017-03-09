@@ -1,0 +1,50 @@
+systemd-cronjobs - crond replacement using systemd timers
+=========================================================
+
+The purpose of this package is to replace any crond package in PLD with much
+more powerful systemd timers, while not forcing them for every PLD
+installation.
+
+The package does not aim to be backward-compatible with existing crontabs.
+This could be done with some wrapper or systemd generator, but the cron jobs
+would be still designed for crond and just extra overhead would be added under
+systemd.
+
+Guarding any crontab entry with /sbin/systemd_booted is an extra overhead for
+non-systemd systems.
+
+The idea is that PLD packages can provide both crontabs and systemd timers,
+like they provide systemd units and init.d startup scripts. When a crond is
+installed, the crontabs would be used, when the new 'systemd-cronjobs' package
+is installed, then the systemd timers will be used.
+
+systemd-cronjobs obsoletes all cron daemons, so it can be used when no crond
+services are required in the system – neither by any of installed packages,
+nor by users.
+
+Packaging cronjobs
+------------------
+
+A package, to be compatible both with crond and systemd-cronjobs, should
+'Require: cronjobs' (instead of 'crondaemon' or 'crontabs') and provide both
+a crontab and a set of two systemd units:
+
+cronjob-%{name}.timer
+cronjob-%{name}.service
+
+The first one defines the schedule and should be WantedBy cronjobs.target (not
+multi-user.target, so it is used only when crond is not installed). The other
+defines how the service should be started each time the timer fires.
+
+The usual %systemd_{post,preun,reload} macros should be used in
+%post/%preun/%postun for the cronjob-%{name}.timer unit.
+
+For packages that do not have own crontabs, but just drop a script into
+/etc/cron.{hourly,daily,weekly,monthly} directory the only required change is
+the 'Require: cronjobs' dependency.
+
+Packaging cron daemons
+----------------------
+
+Cron daemon packages should Provide and Obsolete 'cronjobs' in addition to
+'crondaemon' and 'crontabs'.

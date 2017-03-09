@@ -1,0 +1,5 @@
+[Unit]
+Description=Weekly cron jobs
+
+[Service]
+ExecStart=/bin/run-parts /etc/cron.weekly

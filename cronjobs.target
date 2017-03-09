@@ -1,0 +1,8 @@
+[Unit]
+Description=System cron jobs
+Before=multi-user.target
+
+[Install]
+WantedBy=multi-user.target
+
+# vi: ft=systemd

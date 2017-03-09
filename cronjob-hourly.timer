@@ -1,0 +1,11 @@
+[Unit]
+Description=Hourly cron jobs
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=cronjobs.target
+
+# vi: ft=systemd

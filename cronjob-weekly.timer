@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly cron jobs
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+
+[Install]
+WantedBy=cronjobs.target
+
+# vi: ft=systemd

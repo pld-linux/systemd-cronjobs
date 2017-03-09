@@ -1,0 +1,11 @@
+[Unit]
+Description=Monthly cron jobs
+
+[Timer]
+OnCalendar=monthly
+Persistent=true
+
+[Install]
+WantedBy=cronjobs.target
+
+# vi: ft=systemd
