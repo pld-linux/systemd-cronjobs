@@ -2,7 +2,7 @@ Summary:	crond-like services for systemd
 Summary(pl.UTF-8):	Usługi typu crond dla systemd
 Name:		systemd-cronjobs
 Version:	0.1
-Release:	0.1
+Release:	1
 License:	GPL v2
 Group:		Base
 Source0:	cronjobs.target

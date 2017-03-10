@@ -25,12 +25,51 @@ nor by users.
 Packaging cronjobs
 ------------------
 
-A package, to be compatible both with crond and systemd-cronjobs, should
-'Require: cronjobs' (instead of 'crondaemon' or 'crontabs') and provide both
-a crontab and a set of two systemd units:
+/etc/cron.{hourly,daily,monthly,weekly} only
+............................................
+
+Just make sure they don't require 'crondaemon' or 'crontabs', a directory
+dependece should pull a crond or systemd-cronjobs.
+
+Explicit 'Require: cronjobs' can be added, but is not required
+
+/etc/cron.d/* crontabs, no existing systemd timers
+..................................................
+
+Until systemd-cronjobs compatible timer units are added, the old 'crondaemon'
+or 'crontabs' dependency should be used.
+
+To make package compatible with systemd-cronjobs systemd timer and service
+units should be added for every crontab entry:
 
 cronjob-%{name}.timer
 cronjob-%{name}.service
+
+
+For a crontab like this:
+01 23 * * * someuser do_something
+
+The equivalent systemd units would be:
+
+cronjob-something.timer:
+
+[Unit]
+Description=something cronjob timer
+
+[Timer]
+OnCalendar=23:01
+
+[Install]
+WantedBy=cronjobs.target
+
+cronjobs-something.service:
+
+[Unit]
+Description=something cronjob
+
+[Service]
+ExecStart=/usr/bin/do_something
+User=someuser
 
 The first one defines the schedule and should be WantedBy cronjobs.target (not
 multi-user.target, so it is used only when crond is not installed). The other
@@ -39,9 +78,23 @@ defines how the service should be started each time the timer fires.
 The usual %systemd_{post,preun,reload} macros should be used in
 %post/%preun/%postun for the cronjob-%{name}.timer unit.
 
-For packages that do not have own crontabs, but just drop a script into
-/etc/cron.{hourly,daily,weekly,monthly} directory the only required change is
-the 'Require: cronjobs' dependency.
+After systemd timers are added the 'crondaemon'/'crontabs' dependency should
+be changed to: Requires: cronjobs. This will allow using crond or systemd
+timers.
+
+systemd-only packages
+.....................
+
+Packages that are designed only for systemd do not need this systemd-cronjobs
+package. They may provide just own systemd timers, installed under
+multi-user.target or timers.target.
+
+packages with upstream provided crontabs and systemd timers
+...........................................................
+
+If upstream provides crontab and systemd.timer that don't conflict with each
+other, then they can be used and the crondaemon/crontabs/cronjobs dependecny
+may be dropped (unless it is critical for the timed services to be started).
 
 Packaging cron daemons
 ----------------------
