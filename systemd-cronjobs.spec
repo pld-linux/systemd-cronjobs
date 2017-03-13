@@ -2,7 +2,7 @@ Summary:	crond-like services for systemd
 Summary(pl.UTF-8):	Usługi typu crond dla systemd
 Name:		systemd-cronjobs
 Version:	0.1
-Release:	1
+Release:	2
 License:	GPL v2
 Group:		Base
 Source0:	cronjobs.target
@@ -16,7 +16,12 @@ Source7:	cronjob-monthly.timer
 Source8:	cronjob-monthly.service
 Source9:	README
 URL:		http://pld-linux.org/
+BuildRequires:	rpmbuild(macros) >= 1.644
 Requires:	systemd-init
+Requires(postun):	/usr/sbin/groupdel
+Requires(pre):	/usr/bin/getgid
+Requires(pre):	/usr/sbin/groupadd
+Requires:	systemd-units >= 38
 Provides:	cronjobs
 Provides:	group(crontab)
 Obsoletes:	crondaemon
