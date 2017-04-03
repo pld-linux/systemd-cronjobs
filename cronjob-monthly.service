@@ -3,3 +3,5 @@ Description=Monthly cron jobs
 
 [Service]
 ExecStart=/bin/run-parts /etc/cron.monthly
+
+# vi: ft=systemd
